@@ -286,6 +286,7 @@
       display: flex;
       flex-direction: column;
       overflow-y: auto;
+      overflow-x: auto;
       font-family: var(--font-terminal);
       font-size: 1.25rem;
       line-height: 1.4;
@@ -298,6 +299,7 @@
     /* Scrollbar Styling */
     .terminal-body::-webkit-scrollbar {
       width: 6px;
+      height: 6px;
     }
     .terminal-body::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.3);
@@ -543,6 +545,12 @@
         gap: 0.4rem;
         width: 100%;
       }
+      .terminal-body {
+        font-size: 1.05rem;
+      }
+      .terminal-input {
+        font-size: 1.05rem;
+      }
       footer {
         flex-direction: column;
         gap: 0.6rem;
@@ -718,9 +726,9 @@
     const termBody = document.getElementById('term-body');
 
     const bootLines = [
-      "===========================================================",
-      "      GATEWAY BOOT DIAGNOSTIC v1.0.4 - sh311InP4r4diz3     ",
-      "===========================================================",
+      "==================================================",
+      "   GATEWAY BOOT DIAGNOSTIC v1.0.4 - sh311   ",
+      "==================================================",
       "[  OK  ] Establishing secure transport layers...",
       "[  OK  ] Local socket connection verified on TLS_AES_256_GCM",
       "[ WARN ] GET /: Request index returned null (404 NOT FOUND)",
@@ -742,21 +750,21 @@
   clear    - Flush the current terminal buffer
   hack     - Instantiate exploit visualization simulation`,
       
-      about: `------------------------- BIOGRAPHY -------------------------
+      about: `------------------- BIOGRAPHY -------------------
 Name:     Saikiran B
 Handle:   sh311InP4r4diz3
 Title:    Offensive Security Analyst & Researcher
 Status:   Analyzing secure endpoints. Access authorized.
 Target:   Identifying flaws to make environments resilient.
--------------------------------------------------------------`,
+-------------------------------------------------`,
 
-      skills: `------------------- TECHNICAL CAPABILITIES ------------------
+      skills: `--------------- TECHNICAL CAPABILITIES --------------
 VAPT:         Web & Mobile Apps, Network Infrastructure, APIs
 SecTools:     Nmap, Burp Suite, Metasploit, Wireshark, Gobuster
 Platforms:    HackTheBox, TryHackMe (Active Operator)
 Languages:    Python, Bash, JavaScript, PowerShell, SQL
 Defensive:    OSINT, Auditing, Remediation Guidance
--------------------------------------------------------------`,
+-----------------------------------------------------`,
 
       clear: () => {
         termOutput.textContent = '';
