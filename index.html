@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>sh311InP4r4diz3 | Gateway</title>
+  <meta name="description" content="Secure gateway and landing portal for sh311InP4r4diz3. Cybersecurity researcher, VAPT specialist, and developer.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Theme Variables & Reset */
+    :root {
+      --bg-color: #07070a;
+      --bg-card: rgba(13, 13, 22, 0.7);
+      --border-color: rgba(0, 240, 255, 0.25);
+      --border-hover: rgba(0, 240, 255, 0.6);
+      
+      --color-cyan: #00f0ff;
+      --color-green: #39ff14;
+      --color-purple: #b026ff;
+      --color-red: #ff3b30;
+      --color-yellow: #ffcc00;
+      
+      --glow-cyan: 0 0 10px rgba(0, 240, 255, 0.4);
+      --glow-green: 0 0 10px rgba(57, 255, 20, 0.4);
+      --glow-purple: 0 0 10px rgba(176, 38, 255, 0.4);
+      --glow-red: 0 0 10px rgba(255, 59, 48, 0.4);
+      
+      --font-mono: 'Share Tech Mono', monospace;
+      --font-terminal: 'VT323', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: #e2e8f0;
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Scanline and Flicker Overlay Effect */
+    body::before {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+      z-index: 99999;
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: " ";
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgba(18, 16, 16, 0.1);
+      opacity: 0;
+      z-index: 99998;
+      pointer-events: none;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.15; }
+      50% { opacity: 0.1; }
+      100% { opacity: 0.15; }
+    }
+
+    /* Grid Background */
+    .grid-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Global Glow Classes */
+    .glow-cyan {
+      color: var(--color-cyan);
+      text-shadow: var(--glow-cyan);
+    }
+    .glow-green {
+      color: var(--color-green);
+      text-shadow: var(--glow-green);
+    }
+    .glow-red {
+      color: var(--color-red);
+      text-shadow: var(--glow-red);
+    }
+    .glow-purple {
+      color: var(--color-purple);
+      text-shadow: var(--glow-purple);
+    }
+
+    /* Layout Container */
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      gap: 1.5rem;
+    }
+
+    /* Header Bar */
+    header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, var(--color-cyan), var(--color-purple));
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo-pulse {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-cyan);
+      box-shadow: 0 0 10px var(--color-cyan);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.4; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); box-shadow: 0 0 15px var(--color-cyan); }
+      100% { opacity: 0.4; transform: scale(0.9); }
+    }
+
+    .logo-text {
+      font-size: 1.3rem;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .system-info {
+      display: flex;
+      gap: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .status-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .status-dot.green {
+      background: var(--color-green);
+      box-shadow: var(--glow-green);
+    }
+
+    .status-dot.yellow {
+      background: var(--color-yellow);
+      box-shadow: 0 0 8px var(--color-yellow);
+    }
+
+    /* Main Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 1.5rem;
+      flex-grow: 1;
+    }
+
+    @media (max-width: 968px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Component */
+    .cyber-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 1.5rem;
+      position: relative;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    }
+
+    .cyber-card:hover {
+      border-color: var(--border-hover);
+      box-shadow: 0 8px 32px 0 rgba(0, 240, 255, 0.1);
+    }
+
+    /* Terminal Section */
+    .terminal-card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 450px;
+    }
+
+    .terminal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .terminal-controls {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .term-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .term-dot.red { background: var(--color-red); }
+    .term-dot.yellow { background: var(--color-yellow); }
+    .term-dot.green { background: var(--color-green); }
+
+    .terminal-title {
+      font-size: 0.85rem;
+      color: rgba(226, 232, 240, 0.6);
+      font-family: var(--font-mono);
+      letter-spacing: 1px;
+    }
+
+    .terminal-body {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      font-family: var(--font-terminal);
+      font-size: 1.25rem;
+      line-height: 1.4;
+      color: var(--color-green);
+      text-shadow: 0 0 3px rgba(57, 255, 20, 0.3);
+      max-height: 500px;
+      padding-right: 0.5rem;
+    }
+
+    /* Scrollbar Styling */
+    .terminal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+    .terminal-body::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .terminal-body::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+    .terminal-body::-webkit-scrollbar-thumb:hover {
+      background: var(--border-hover);
+    }
+
+    .terminal-output {
+      margin-bottom: 1rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      margin-top: auto;
+    }
+
+    .prompt-text {
+      color: var(--color-cyan);
+      margin-right: 0.5rem;
+      user-select: none;
+    }
+
+    .terminal-input {
+      background: transparent;
+      border: none;
+      color: var(--color-green);
+      font-family: var(--font-terminal);
+      font-size: 1.25rem;
+      flex-grow: 1;
+      outline: none;
+      caret-color: var(--color-cyan);
+    }
+
+    /* Sidebar Area */
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .section-title {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Maintenance Warning Banner */
+    .maintenance-banner {
+      background: rgba(255, 59, 48, 0.08);
+      border: 1px solid var(--color-red);
+      color: var(--color-red);
+      padding: 1rem;
+      border-radius: 4px;
+      margin-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      box-shadow: 0 0 10px rgba(255, 59, 48, 0.05);
+    }
+
+    .warn-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: bold;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .warn-icon {
+      animation: flash 1s infinite alternate;
+    }
+
+    @keyframes flash {
+      0% { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+
+    /* Quick Links Grid */
+    .links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .portal-link-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      background: rgba(0, 240, 255, 0.02);
+      border: 1px solid rgba(0, 240, 255, 0.15);
+      border-radius: 4px;
+      padding: 1.2rem;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portal-link-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--color-cyan);
+      transform: scaleY(0);
+      transition: transform 0.3s ease;
+      transform-origin: bottom;
+    }
+
+    .portal-link-card:hover {
+      background: rgba(0, 240, 255, 0.06);
+      border-color: var(--color-cyan);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.15);
+      transform: translateX(4px);
+    }
+
+    .portal-link-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .portal-link-card.kb::before {
+      background: var(--color-purple);
+    }
+    .portal-link-card.kb:hover {
+      background: rgba(176, 38, 255, 0.06);
+      border-color: var(--color-purple);
+      box-shadow: 0 0 15px rgba(176, 38, 255, 0.15);
+    }
+
+    .portal-link-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .portal-link-title {
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .portal-link-arrow {
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .portal-link-card:hover .portal-link-arrow {
+      transform: translateX(4px);
+    }
+
+    .portal-link-desc {
+      font-size: 0.85rem;
+      color: rgba(226, 232, 240, 0.65);
+      line-height: 1.4;
+    }
+
+    .node-tag {
+      align-self: flex-start;
+      font-size: 0.7rem;
+      background: rgba(0, 240, 255, 0.15);
+      border: 1px solid var(--color-cyan);
+      color: var(--color-cyan);
+      padding: 0.15rem 0.5rem;
+      border-radius: 3px;
+      margin-top: 0.4rem;
+      font-weight: bold;
+    }
+
+    .portal-link-card.kb .node-tag {
+      background: rgba(176, 38, 255, 0.15);
+      border-color: var(--color-purple);
+      color: var(--color-purple);
+    }
+
+    /* System Stats Panel */
+    .stats-panel {
+      font-size: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.05);
+      padding-bottom: 0.3rem;
+    }
+
+    .stat-label {
+      color: rgba(226, 232, 240, 0.5);
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+    }
+
+    /* Footer Section */
+    footer {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
+      padding: 0.8rem 1.5rem;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(226, 232, 240, 0.4);
+      margin-top: auto;
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    /* Mobile Adaptability Adjustments */
+    @media (max-width: 640px) {
+      header {
+        flex-direction: column;
+        gap: 0.8rem;
+        align-items: flex-start;
+      }
+      .system-info {
+        flex-direction: column;
+        gap: 0.4rem;
+        width: 100%;
+      }
+      footer {
+        flex-direction: column;
+        gap: 0.6rem;
+        text-align: center;
+      }
+      .footer-right {
+        justify-content: center;
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="grid-background"></div>
+  
+  <div class="container">
+    
+    <!-- SYSTEM HEADER -->
+    <header>
+      <div class="logo-container">
+        <div class="logo-pulse"></div>
+        <div class="logo-text glow-cyan">GATEWAY_sh311InP4r4diz3</div>
+      </div>
+      <div class="system-info">
+        <div class="status-tag">
+          <span class="status-dot green"></span>
+          <span>SECURE PORTAL</span>
+        </div>
+        <div class="status-tag">
+          <span class="status-dot green"></span>
+          <span class="glow-cyan" id="live-time">SYS_TIME: 14:00:00</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN GRID CONTAINER -->
+    <main class="main-grid">
+      
+      <!-- LEFT HAND: INTERACTIVE TERMINAL -->
+      <section class="cyber-card terminal-card" id="terminal-section">
+        <div class="terminal-header">
+          <div class="terminal-controls">
+            <span class="term-dot red"></span>
+            <span class="term-dot yellow"></span>
+            <span class="term-dot green"></span>
+          </div>
+          <span class="terminal-title">visitor@sh311InP4r4diz3:~$</span>
+        </div>
+        
+        <div class="terminal-body" id="term-body">
+          <div class="terminal-output" id="term-output"></div>
+          
+          <div class="terminal-input-row" id="term-input-row" style="display: none;">
+            <span class="prompt-text">sh311InP4r4diz3@root:~#</span>
+            <input type="text" class="terminal-input" id="term-input" autocomplete="off" spellcheck="false" autofocus>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT HAND: MAIN METADATA & QUICK LINKS -->
+      <section class="sidebar-section">
+        
+        <!-- MAINTENANCE WARN -->
+        <div class="maintenance-banner">
+          <div class="warn-header">
+            <span class="warn-icon">⚠️</span>
+            <span>NODE STATUS: disrupted</span>
+          </div>
+          <p style="font-size: 0.85rem; line-height: 1.4;">
+            The root address directory is currently undergoing core redeployment (Status 404 resolved). Sub-routing systems and external endpoints remain operational.
+          </p>
+        </div>
+
+        <!-- PORTAL ACCESS NODES -->
+        <div class="cyber-card">
+          <h2 class="section-title">
+            <span class="glow-cyan">ACTIVE_NODES</span>
+            <span style="font-size: 0.75rem; color: var(--color-green);">[ ONLINE ]</span>
+          </h2>
+          <div class="links-list">
+            
+            <!-- VAPT KB LINK -->
+            <a href="/vapt-knowledge-base/" class="portal-link-card kb">
+              <div class="portal-link-header">
+                <span class="portal-link-title glow-purple">VAPT Knowledge Base</span>
+                <span class="portal-link-arrow glow-purple">➔</span>
+              </div>
+              <p class="portal-link-desc">
+                My documentation and logs repository for vulnerability assessments, penetration testing methodologies, HackTheBox/TryHackMe writeups, and payload cheatsheets.
+              </p>
+              <span class="node-tag">NODE://VAPT-KB</span>
+            </a>
+            
+            <!-- GITHUB LINK -->
+            <a href="https://github.com/sh311InP4r4diz3" target="_blank" rel="noopener noreferrer" class="portal-link-card">
+              <div class="portal-link-header">
+                <span class="portal-link-title glow-cyan">GitHub Workspace</span>
+                <span class="portal-link-arrow glow-cyan">➔</span>
+              </div>
+              <p class="portal-link-desc">
+                Public repositories, custom exploits, automated shell configurations, security scripts, and code contributions.
+              </p>
+              <span class="node-tag">NODE://GITHUB</span>
+            </a>
+            
+          </div>
+        </div>
+
+        <!-- PROTOCOL DIAGNOSTICS -->
+        <div class="cyber-card">
+          <h2 class="section-title">
+            <span class="glow-cyan">SYS_DIAGNOSTICS</span>
+            <span style="font-size: 0.75rem; color: var(--color-purple);">[ METRICS ]</span>
+          </h2>
+          <div class="stats-panel">
+            <div class="stat-row">
+              <span class="stat-label">Operator</span>
+              <span class="stat-value">Saikiran Boiny</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Roles</span>
+              <span class="stat-value glow-green">Pentester / Researcher</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Base Redirect</span>
+              <span class="stat-value">Enabled (Static)</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Response Code</span>
+              <span class="stat-value glow-red">404 Bypass Active</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Access Protocol</span>
+              <span class="stat-value">HTTPS (Secure TLS)</span>
+            </div>
+          </div>
+        </div>
+        
+      </section>
+      
+    </main>
+
+    <!-- FOOTER -->
+    <footer>
+      <div>SYS_V_1.0.4 - SECURE LANDING INSTANTIATED</div>
+      <div class="footer-right">
+        <div>CONNECTION: ESTABLISHED</div>
+        <div>GATEWAY: STABLE</div>
+      </div>
+    </footer>
+    
+  </div>
+
+  <!-- Terminal Script logic -->
+  <script>
+    // Live time updater
+    function updateTime() {
+      const liveTimeEl = document.getElementById('live-time');
+      const now = new Date();
+      const hrs = String(now.getHours()).padStart(2, '0');
+      const mins = String(now.getMinutes()).padStart(2, '0');
+      const secs = String(now.getSeconds()).padStart(2, '0');
+      liveTimeEl.textContent = `SYS_TIME: ${hrs}:${mins}:${secs}`;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // Terminal Commands, Text & Scripting
+    const termOutput = document.getElementById('term-output');
+    const termInputRow = document.getElementById('term-input-row');
+    const termInput = document.getElementById('term-input');
+    const termBody = document.getElementById('term-body');
+
+    const bootLines = [
+      "===========================================================",
+      "      GATEWAY BOOT DIAGNOSTIC v1.0.4 - sh311InP4r4diz3     ",
+      "===========================================================",
+      "[  OK  ] Establishing secure transport layers...",
+      "[  OK  ] Local socket connection verified on TLS_AES_256_GCM",
+      "[ WARN ] GET /: Request index returned null (404 NOT FOUND)",
+      "[ INFO ] Bypassing root exception... Redirect rules injected.",
+      "[ INFO ] Operational interfaces located: 2 active nodes found.",
+      "         -> Node [1]: /vapt-knowledge-base/",
+      "         -> Node [2]: github.com/sh311InP4r4diz3",
+      "[  OK  ] Initializing diagnostic console overlay...",
+      "[SUCCESS] Environment ready. Command interpreter loaded.",
+      " ",
+      "Type 'help' to view available diagnostic commands.",
+      " "
+    ];
+
+    const commands = {
+      help: `Available commands:
+  about    - Developer bio and credentials
+  skills   - Overview of core cybersecurity skillsets
+  projects - Catalog of directories and direct access links
+  clear    - Flush the current terminal buffer
+  hack     - Instantiate exploit visualization simulation`,
+      
+      about: `------------------------- BIOGRAPHY -------------------------
+Name:     Saikiran Boiny
+Handle:   sh311InP4r4diz3
+Title:    Vulnerability Assessment & Penetration Tester (VAPT)
+Status:   Seeking security research and testing engagements.
+Target:   Identifying flaws to make environments resilient.
+-------------------------------------------------------------`,
+
+      skills: `------------------- TECHNICAL CAPABILITIES ------------------
+VAPT:         Web Apps, Network Infrastructure, APIs
+SecTools:     Nmap, Burp Suite, Metasploit, Wireshark, Gobuster
+Platforms:    HackTheBox, TryHackMe (Active Operator)
+Languages:    Python, Bash, JavaScript, PowerShell, SQL
+Defensive:    OSINT, Auditing, Remediation Guidance
+-------------------------------------------------------------`,
+
+      projects: `---------------------- ACTIVE PROJECTS ----------------------
+[1] VAPT Knowledge Base (Web Interface)
+    Path: /vapt-knowledge-base/
+    Note: Methodologies, room writeups, and payload cheatsheets.
+    Access: Click [VAPT Knowledge Base] in sidebar or open /vapt-knowledge-base/
+
+[2] GitHub Profile Workspace
+    Link: https://github.com/sh311InP4r4diz3
+    Note: Script bundles, custom templates, security utilities.
+-------------------------------------------------------------`,
+
+      clear: () => {
+        termOutput.textContent = '';
+        return '';
+      },
+
+      hack: () => {
+        simulateExploit();
+        return '';
+      }
+    };
+
+    // Matrix Hack Simulation
+    let isExploiting = false;
+    function simulateExploit() {
+      if (isExploiting) return;
+      isExploiting = true;
+      termInputRow.style.display = 'none';
+      
+      const payloadLines = [
+        "[*] INITIALIZING REVERSE TRANSMISSION...",
+        "[*] Bypassing stateful firewall configurations...",
+        "[*] Target identified: Gateway Node 127.0.0.1",
+        "[*] Binding listener socket to port 4444...",
+        "[*] Generating payload buffer [A x 1024]...",
+        "[+] Buffer Overflow successfully executed! EIP overwritten.",
+        "[+] Payload deployed. Sending stager (Stage 1)...",
+        "[+] Stage 1 successfully loaded. Meterpreter thread initiated.",
+        " ",
+        "               [ACCESS GRANTED: ROOT LEVEL SHELL]",
+        " ",
+        "  .-.                                                       .-.",
+        " (_._)      ===================================            (_._)",
+        "  | |       |    sh311InP4r4diz3 SHELL ACTIVE  |            | |",
+        "  | |       ===================================            | |",
+        "  '_'                                                       '_'",
+        " "
+      ];
+
+      let delay = 0;
+      payloadLines.forEach((line) => {
+        setTimeout(() => {
+          printToTerminal(line);
+          termBody.scrollTop = termBody.scrollHeight;
+        }, delay);
+        delay += 250;
+      });
+
+      setTimeout(() => {
+        isExploiting = false;
+        termInputRow.style.display = 'flex';
+        termInput.focus();
+      }, delay + 200);
+    }
+
+    function printToTerminal(text) {
+      termOutput.textContent += text + '\n';
+    }
+
+    // Interactive Boot Typing Effect
+    let bootIndex = 0;
+    function typeBootLine() {
+      if (bootIndex < bootLines.length) {
+        printToTerminal(bootLines[bootIndex]);
+        bootIndex++;
+        termBody.scrollTop = termBody.scrollHeight;
+        setTimeout(typeBootLine, 40);
+      } else {
+        // Boot complete: enable input
+        termInputRow.style.display = 'flex';
+        termInput.focus();
+      }
+    }
+
+    // Command Handler
+    function handleCommand(cmdRaw) {
+      const cmd = cmdRaw.trim().toLowerCase();
+      printToTerminal(`sh311InP4r4diz3@root:~# ${cmdRaw}`);
+      
+      if (cmd === '') {
+        return;
+      }
+
+      if (commands.hasOwnProperty(cmd)) {
+        const output = commands[cmd];
+        if (typeof output === 'function') {
+          output();
+        } else {
+          printToTerminal(output);
+        }
+      } else {
+        printToTerminal(`Unknown command: '${cmd}'. Type 'help' to see valid operations.`);
+      }
+      
+      printToTerminal(''); // Empty line for readability
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+
+    // Event Listeners
+    termInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const inputVal = termInput.value;
+        termInput.value = '';
+        handleCommand(inputVal);
+      }
+    });
+
+    // Refocus terminal input when clicking anywhere inside the terminal body
+    document.getElementById('terminal-section').addEventListener('click', () => {
+      if (!isExploiting) {
+        termInput.focus();
+      }
+    });
+
+    // Run Boot Sequence
+    window.addEventListener('load', () => {
+      setTimeout(typeBootLine, 500);
+    });
+  </script>
+</body>
+</html>
